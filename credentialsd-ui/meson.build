@@ -66,7 +66,7 @@ endif
 cargo_options = [
   '--manifest-path', meson.project_source_root() / gui_source_dir / 'Cargo.toml',
 ]
-cargo_options += ['--target-dir', meson.project_build_root() / gui_build_dir / 'target']
+cargo_options += ['--target-dir', meson.project_build_root() / 'target']
 if get_option('cargo_offline') == true
   cargo_options += ['--offline']
 endif

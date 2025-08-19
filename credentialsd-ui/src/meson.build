@@ -50,7 +50,7 @@ custom_target(
     cargo_options,
     '&&',
     'cp',
-    gui_build_dir / 'target' / rust_target / gui_executable_name,
+    'target' / rust_target / gui_executable_name,
     '@OUTPUT@',
   ],
 )

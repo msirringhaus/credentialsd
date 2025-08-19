@@ -1,14 +1,14 @@
 name: Build project
 on:
   push:
-    branches:
-      - main
   pull_request:
 
 jobs:
   build:
     env:
       RUST_LOG: debug
+      # Deactivate incremental builds to speed up build times
+      CARGO_INCREMENTAL: 0
     name: Build
     runs-on: ubuntu-22.04
     steps:
@@ -26,6 +26,13 @@ jobs:
         run: |
           # Newer version needed for --interactive flag needed below
           python3 -m pip install --user -v 'meson==1.5.0'
+      # Rust cache to speed up builds
+      - name: Cache Dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "credentialsd-common -> ../build/target\n
+                      credentialsd -> ../build/target\n
+                      credentialsd-ui -> ../build/target"
       - name: Setup meson project
         run: meson setup build
       - name: Build
@@ -37,11 +44,11 @@ jobs:
         run: meson test --interactive
         working-directory: build/
       - name: Check clippy recommendations (Common)
-        run: env CARGO_HOME=build/cargo-home cargo clippy --manifest-path credentialsd-common/Cargo.toml --target-dir build/credentialsd-common/target/release
+        run: env CARGO_HOME=build/cargo-home cargo clippy --manifest-path credentialsd-common/Cargo.toml --target-dir build/target/release --no-deps --release
       - name: Check clippy recommendations (UI)
-        run: env CARGO_HOME=build/cargo-home cargo clippy --manifest-path credentialsd-ui/Cargo.toml --target-dir build/credentialsd-ui/target/release
+        run: env CARGO_HOME=build/cargo-home cargo clippy --manifest-path credentialsd-ui/Cargo.toml --target-dir build/target/release --no-deps --release
       - name: Check clippy recommendations (Server)
-        run: env CARGO_HOME=build/cargo-home cargo clippy --manifest-path credentialsd/Cargo.toml --target-dir build/credentialsd/target/release
+        run: env CARGO_HOME=build/cargo-home cargo clippy --manifest-path credentialsd/Cargo.toml --target-dir build/target/release --no-deps --release
       - name: Check formatting (Common)
         run: cargo fmt --check
         working-directory: credentialsd-common

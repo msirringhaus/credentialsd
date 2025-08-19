@@ -26,7 +26,7 @@ custom_target(
     cargo_options,
     '&&',
     'cp',
-    backend_build_dir / 'target' / rust_target / backend_executable_name,
+    'target' / rust_target / backend_executable_name,
     '@OUTPUT@',
   ],
 )
